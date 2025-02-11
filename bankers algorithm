@@ -1,0 +1,42 @@
+#include <stdio.h>
+#define P 5 // Number of processes
+#define R 3 // Number of resources
+
+int allocate[P][R] = { {0, 1, 0}, {2, 0, 0}, {3, 0, 2}, {2, 1, 1}, {0, 0, 2} };
+int max[P][R] = { {7, 5, 3}, {3, 2, 2}, {9, 0, 2}, {2, 2, 2}, {4, 3, 3} };
+int available[R] = {3, 3, 2};
+
+void bankers_algorithm() {
+int finish[P] = {0}, safeSequence[P], work[R];
+for (int i = 0; i < R; i++) work[i] = available[i];
+int count = 0;
+while (count < P) {
+int found = 0;
+for (int p = 0; p < P; p++) {
+if (!finish[p]) {
+int j;
+for (j = 0; j < R; j++)
+if (max[p][j] - allocate[p][j] > work[j])
+break;
+if (j == R) {
+for (int k = 0; k < R; k++)
+work[k] += allocate[p][k];
+safeSequence[count++] = p;
+finish[p] = 1;
+found = 1;
+}
+}
+}
+if (!found) {
+printf("System is in an unsafe state!\n");
+return;
+}
+}
+printf("Safe sequence: ");
+for (int i = 0; i < P; i++) printf("%d ", safeSequence[i]);
+printf("\n");
+}
+
+int main() {
+bankers_algorithm();
+return 0;
